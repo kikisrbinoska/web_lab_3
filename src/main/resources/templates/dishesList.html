@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title th:text="${selectedChef != null ? 'Add Dish to Chef' : 'Dishes List - FINKI Restaurant'}"></title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .jumbotron {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .jumbotron-heading {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin: 0;
+        }
+
+        .alert {
+            background: rgba(220, 53, 69, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            color: white;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .mb-3 {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-inline {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .form-inline label {
+            color: white;
+            font-weight: 500;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            outline: none;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .form-control option {
+            background: rgba(118, 75, 162, 0.95);
+            color: white;
+        }
+
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: rgba(0, 123, 255, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: rgba(0, 123, 255, 0.5);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(108, 117, 125, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(108, 117, 125, 0.5);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: rgba(40, 167, 69, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: rgba(40, 167, 69, 0.5);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-info {
+            background: rgba(23, 162, 184, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: rgba(23, 162, 184, 0.5);
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.4);
+        }
+
+        .btn-danger {
+            background: rgba(220, 53, 69, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: rgba(220, 53, 69, 0.5);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .ml-2 {
+            margin-left: 0.5rem;
+        }
+
+        .mr-2 {
+            margin-right: 0.5rem;
+        }
+
+        .table {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .table thead {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .table th {
+            padding: 1rem;
+            color: white;
+            font-weight: 600;
+            border: none;
+            text-align: left;
+        }
+
+        .table td {
+            padding: 0.75rem 1rem;
+            color: white;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .table-striped tbody tr:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        section {
+            float: left;
+            margin: 0 1.5%;
+            width: 63%;
+        }
+
+        aside {
+            float: right;
+            margin: 0 1.5%;
+            width: 30%;
+        }
+
+        aside table {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 100%;
+            overflow: hidden;
+        }
+
+        aside table td {
+            padding: 10px;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        aside table td b {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .dish-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .dish-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .dish-item label {
+            color: white;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .dish-item input[type="radio"] {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        header h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1.5rem;
+        }
+
+        header h2 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .alert-info {
+            background: rgba(23, 162, 184, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(23, 162, 184, 0.3);
+            color: white;
+            padding: 1rem;
+        }
+
+        .alert-info a {
+            color: #c8e6f5;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== Кога има избран готвач ========== -->
+<div th:if="${selectedChef != null}">
+    <header>
+        <h1>Select the Dish to add to the Chef</h1>
+    </header>
+    <section>
+        <h2>Select dish:</h2>
+        <form action="/chefs/addDish" method="POST">
+            <input type="hidden" name="chefId" th:value="${selectedChef.id}">
+
+            <div th:each="dish : ${dishes}" class="dish-item">
+                <input type="radio"
+                       name="dishId"
+                       th:value="${dish.dishId}"
+                       th:id="'dish-' + ${dish.id}"
+                       required>
+                <label th:for="'dish-' + ${dish.id}"
+                       th:text="${dish.name} + ' (' + ${dish.cuisine} + ', ' + ${dish.preparationTime} + ' min)'">
+                </label>
+            </div>
+
+            <br/>
+            <input type="submit" value="Add dish to Chef" class="btn btn-primary">
+        </form>
+
+        <br/>
+        <a href="/dishes/dish-form" class="btn btn-success">Add New Dish</a>
+        <a href="/dishes" class="btn btn-secondary">Manage Dishes (Edit/Delete)</a>
+    </section>
+    <aside>
+        <table>
+            <tr>
+                <td><b>Chef ID</b></td>
+                <td th:text="${selectedChef.id}"></td>
+            </tr>
+            <tr>
+                <td><b>Chef Name</b></td>
+                <td th:text="${selectedChef.firstName} + ' ' + ${selectedChef.lastName}"></td>
+            </tr>
+            <tr>
+                <td><b>Bio</b></td>
+                <td th:text="${selectedChef.bio}"></td>
+            </tr>
+        </table>
+
+        <br/>
+        <a href="/chefs" class="btn btn-secondary">Back to Chefs</a>
+    </aside>
+</div>
+
+<!-- ========== Кога нема избран готвач (CRUD режим) ========== -->
+<div th:if="${selectedChef == null}" class="container">
+    <section class="jumbotron text-center">
+        <h1 class="jumbotron-heading">FINKI Restaurant - All Dishes</h1>
+    </section>
+
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- ✅ ДОДАДЕТЕ ФИЛТЕР ПО ГОТВАЧ -->
+    <div class="mb-3">
+        <form method="get" action="/dishes" class="form-inline">
+            <label for="chefFilter" class="mr-2">Filter by Chef:</label>
+            <select name="chefId" id="chefFilter" class="form-control mr-2">
+                <option value="">All Chefs</option>
+                <option th:each="chef : ${chefs}"
+                        th:value="${chef.id}"
+                        th:text="${chef.firstName + ' ' + chef.lastName}"
+                        th:selected="${chef.id == selectedChefId}">
+                </option>
+            </select>
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="/dishes" class="btn btn-secondary ml-2">Clear</a>
+        </form>
+    </div>
+
+    <div class="mb-3">
+        <a href="/dishes/dish-form" class="btn btn-success">Add New Dish</a>
+        <a href="/chefs" class="btn btn-secondary">Go to Chefs</a>
+    </div>
+
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+        <tr>
+            <th>Dish ID</th>
+            <th>Name</th>
+            <th>Cuisine</th>
+            <th>Preparation Time (min)</th>
+            <th>Chef</th> <!-- ✅ ДОДАДЕТЕ КОЛОНА ЗА ГОТВАЧ -->
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="dish : ${dishes}">
+            <td th:text="${dish.dishId}"></td>
+            <td th:text="${dish.name}"></td>
+            <td th:text="${dish.cuisine}"></td>
+            <td th:text="${dish.preparationTime}"></td>
+            <td th:text="${dish.chef != null ? dish.chef.firstName + ' ' + dish.chef.lastName : 'No Chef'}"></td> <!-- ✅ ПРИКАЖИ ГОТВАЧ -->
+            <td>
+                <a th:href="@{/dishes/dish-form/{id}(id=${dish.id})}"
+                   class="btn btn-sm btn-info">
+                    Edit
+                </a>
+
+                <form th:action="@{/dishes/delete/{id}(id=${dish.id})}"
+                      method="post"
+                      style="display:inline;"
+                      onsubmit="return confirm('Are you sure you want to delete this dish?');">
+                    <button type="submit" class="btn btn-sm btn-danger">
+                        Delete
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${#lists.isEmpty(dishes)}" class="alert alert-info">
+        No dishes available. <a href="/dishes/dish-form">Add your first dish!</a>
+    </div>
+</div>
+
+</body>
+</html>
